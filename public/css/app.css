@@ -1,0 +1,142 @@
+/* SafeNepal Custom Styles */
+:root {
+    --safenepal-primary: #2c3e50;
+    --safenepal-secondary: #7f8c8d;
+    --safenepal-sos: #c0392b;
+    --safenepal-bg: #f8f9fa;
+    --safenepal-sidebar: #2c3e50;
+}
+
+body {
+    background-color: var(--safenepal-bg);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: var(--safenepal-sidebar) !important;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar .nav-link {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+    transition: background-color 0.2s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    font-weight: 500;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 260px;
+    min-height: 100vh;
+}
+
+/* SOS Button */
+.sos-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: var(--safenepal-sos);
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.4);
+    z-index: 999;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sos-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(192, 57, 43, 0.5);
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+}
+
+/* Status Badges */
+.badge-low {
+    background-color: #27ae60;
+}
+
+.badge-moderate {
+    background-color: #f39c12;
+}
+
+.badge-high {
+    background-color: #e74c3c;
+}
+
+.badge-pending {
+    background-color: #f39c12;
+}
+
+.badge-verified {
+    background-color: #27ae60;
+}
+
+.badge-rejected {
+    background-color: #e74c3c;
+}
+
+/* Map Container */
+.map-container {
+    height: 400px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: var(--safenepal-primary);
+    box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.15);
+}
+
+/* Table Styles */
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
