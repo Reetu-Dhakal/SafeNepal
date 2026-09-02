@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+const API = 'http://localhost:8000'
+
 function Home() {
   const [disasters, setDisasters] = useState([])
   const [news, setNews] = useState([])
@@ -10,21 +12,21 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const fetchNews = (hours = 0, q = '') => {
-    let url = `/api/v1/news?limit=50`
+    let url = `${API}/api/v1/news?limit=50`
     if (hours > 0) url += `&hours=${hours}`
     if (q) url += `&q=${encodeURIComponent(q)}`
     return fetch(url).then((r) => (r.ok ? r.json() : { data: [] })).catch(() => ({ data: [] }))
   }
 
   const fetchDisasterNews = (hours = 0) => {
-    let url = `/api/v1/news/disaster?limit=50`
+    let url = `${API}/api/v1/news/disaster?limit=50`
     if (hours > 0) url += `&hours=${hours}`
     return fetch(url).then((r) => (r.ok ? r.json() : { data: [] })).catch(() => ({ data: [] }))
   }
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/v1/disasters/active').then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      fetch(`${API}/api/v1/disasters/active`).then((r) => (r.ok ? r.json() : [])).catch(() => []),
       fetchNews(),
       fetchDisasterNews(),
     ]).then(([d, n, dn]) => {
