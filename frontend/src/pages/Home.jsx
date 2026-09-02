@@ -5,26 +5,22 @@ function Home() {
   const [news, setNews] = useState([])
   const [disasterNews, setDisasterNews] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState('all')
 
   useEffect(() => {
+    const fetchJson = (url) =>
+      fetch(url).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+
     Promise.all([
-      fetch('/api/v1/disasters/active').then(r => r.json()),
-      fetch('/api/v1/news?limit=30').then(r => r.json()),
-      fetch('/api/v1/news/disaster?limit=20').then(r => r.json()),
-    ])
-      .then(([disasterData, newsData, disNewsData]) => {
-        setDisasters(Array.isArray(disasterData) ? disasterData : [])
-        setNews(newsData.data || [])
-        setDisasterNews(disNewsData.data || [])
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error('Error:', err)
-        setError(err.message)
-        setLoading(false)
-      })
+      fetchJson('/api/v1/disasters/active'),
+      fetchJson('/api/v1/news?limit=30'),
+      fetchJson('/api/v1/news/disaster?limit=20'),
+    ]).then(([disasterData, newsData, disNewsData]) => {
+      setDisasters(Array.isArray(disasterData) ? disasterData : [])
+      setNews(newsData?.data || [])
+      setDisasterNews(disNewsData?.data || [])
+      setLoading(false)
+    })
   }, [])
 
   const getRiskColor = (level) => {
@@ -40,7 +36,7 @@ function Home() {
     try {
       const d = new Date(dateStr)
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-    } catch { return dateStr }
+    } catch { return '' }
   }
 
   if (loading) {
@@ -51,17 +47,9 @@ function Home() {
     )
   }
 
-  if (error) {
-    return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-        Error: {error}
-      </div>
-    )
-  }
-
   return (
     <div>
-      {/* Disaster Events Section */}
+      {/* Disaster Events */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-1">Active Disasters</h2>
         <p className="text-gray-500 text-sm mb-4">Current disaster events across Nepal</p>
@@ -108,7 +96,7 @@ function Home() {
         )}
       </section>
 
-      {/* News Section */}
+      {/* News */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -134,7 +122,7 @@ function Home() {
 
         {(activeTab === 'all' ? news : disasterNews).length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-            No news available.
+            Loading news... Please wait.
           </div>
         ) : (
           <div className="space-y-3">
