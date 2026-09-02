@@ -157,16 +157,12 @@ function Home() {
             {featured && (
               <a href={featured.link} target="_blank" rel="noopener noreferrer" className="block mb-4 bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition">
                 <div className="flex flex-col md:flex-row">
-                  {featured.image ? (
+                  {featured.image && (
                     <div className="md:w-1/2 h-48 md:h-64 bg-gray-200 shrink-0">
-                      <img src={featured.image} alt={featured.title} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none' }} />
-                    </div>
-                  ) : (
-                    <div className="md:w-1/2 h-48 md:h-64 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shrink-0">
-                      <span className="text-white text-4xl font-bold">SafeNepal</span>
+                      <img src={featured.image} alt={featured.title} className="w-full h-full object-cover" onError={(e) => { e.target.parentElement.style.display = 'none' }} />
                     </div>
                   )}
-                  <div className="p-5 flex flex-col justify-center flex-1">
+                  <div className={`p-5 flex flex-col justify-center ${featured.image ? 'flex-1' : 'w-full'}`}>
                     <div className="flex items-center gap-2 mb-2">
                       <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">{featured.source}</span>
                       <span className="text-gray-400 text-xs">{formatDate(featured.pubDate)}</span>
@@ -183,17 +179,11 @@ function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {gridItems.map((item, i) => (
                 <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="block bg-white rounded-lg shadow-sm hover:shadow-md transition overflow-hidden group">
-                  {/* Image */}
-                  {item.image ? (
-                    <div className="h-40 bg-gray-200 overflow-hidden">
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" onError={(e) => { e.target.parentElement.innerHTML = '<div class="h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center"><span class="text-white text-lg font-bold">News</span></div>' }} />
-                    </div>
-                  ) : (
-                    <div className="h-40 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                      <span className="text-white text-lg font-bold">News</span>
+                  {item.image && (
+                    <div className="h-40 bg-gray-100 overflow-hidden">
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" onError={(e) => { e.target.parentElement.style.display = 'none' }} />
                     </div>
                   )}
-                  {/* Content */}
                   <div className="p-3">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">{item.source}</span>

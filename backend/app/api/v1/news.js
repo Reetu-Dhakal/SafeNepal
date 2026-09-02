@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { fetchAllNews, filterByTimeRange, NEWS_SOURCES } = require('../../services/news');
+const { fetchAllNews, filterByTimeRange, enrichWithOGImages, NEWS_SOURCES } = require('../../services/news');
 
 let newsCache = [];
 let lastFetched = 0;
-const CACHE_TTL = 3 * 60 * 1000; // 3 minutes
+const CACHE_TTL = 3 * 60 * 1000;
 let fetching = false;
+let enriching = false;
 
 async function refreshCache() {
   if (fetching) return;
@@ -13,7 +14,9 @@ async function refreshCache() {
   try {
     newsCache = await fetchAllNews();
     lastFetched = Date.now();
-    console.log(`[NEWS] Cached ${newsCache.length} articles`);
+    console.log(`[NEWS] Fetched ${newsCache.length} articles`);
+    // Enrich with images in background
+    enrichImages();
   } catch (err) {
     console.warn('[NEWS] Refresh failed:', err.message);
   } finally {
@@ -21,9 +24,20 @@ async function refreshCache() {
   }
 }
 
-// Initial fetch on startup
+async function enrichImages() {
+  if (enriching) return;
+  enriching = true;
+  try {
+    await enrichWithOGImages(newsCache);
+    console.log(`[NEWS] Enriched with images`);
+  } catch (err) {
+    console.warn('[NEWS] Enrich failed:', err.message);
+  } finally {
+    enriching = false;
+  }
+}
+
 refreshCache();
-// Refresh every 3 minutes
 setInterval(refreshCache, CACHE_TTL);
 
 router.get('/', (req, res) => {
@@ -35,36 +49,21 @@ router.get('/', (req, res) => {
   const search = (req.query.q || '').toLowerCase();
 
   let results = [...newsCache];
-
-  if (hours > 0) {
-    results = filterByTimeRange(results, hours);
-  }
-
-  if (disasterOnly) {
-    results = results.filter((n) => n.disasterRelated);
-  }
-
-  if (source) {
-    results = results.filter((n) => n.source.toLowerCase().includes(source.toLowerCase()));
-  }
-
-  if (search) {
-    results = results.filter((n) =>
-      n.title.toLowerCase().includes(search) || n.summary.toLowerCase().includes(search)
-    );
-  }
+  if (hours > 0) results = filterByTimeRange(results, hours);
+  if (disasterOnly) results = results.filter((n) => n.disasterRelated);
+  if (source) results = results.filter((n) => n.source.toLowerCase().includes(source.toLowerCase()));
+  if (search) results = results.filter((n) => n.title.toLowerCase().includes(search) || n.summary.toLowerCase().includes(search));
 
   const total = results.length;
   const offset = (page - 1) * limit;
-  const data = results.slice(offset, offset + limit);
-
   res.json({
     total,
     page,
     limit,
     hours: hours || 'all',
     cached: Date.now() - lastFetched < CACHE_TTL,
-    data,
+    enriching,
+    data: results.slice(offset, offset + limit),
   });
 });
 
@@ -74,20 +73,14 @@ router.get('/disaster', (req, res) => {
   const hours = parseInt(req.query.hours) || 0;
 
   let results = newsCache.filter((n) => n.disasterRelated);
-
-  if (hours > 0) {
-    results = filterByTimeRange(results, hours);
-  }
-
-  const total = results.length;
-  const offset = (page - 1) * limit;
+  if (hours > 0) results = filterByTimeRange(results, hours);
 
   res.json({
-    total,
+    total: results.length,
     page,
     limit,
     hours: hours || 'all',
-    data: results.slice(offset, offset + limit),
+    data: results.slice((page - 1) * limit, (page - 1) * limit + limit),
   });
 });
 
