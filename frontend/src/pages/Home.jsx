@@ -75,6 +75,12 @@ function Home() {
     )
   }
 
+  const currentNews = activeTab === 'all' ? news : disasterNews
+
+  // Split: first 1 big, rest grid
+  const featured = currentNews[0]
+  const gridItems = currentNews.slice(1)
+
   return (
     <div>
       {/* Disaster Events */}
@@ -125,39 +131,13 @@ function Home() {
             <p className="text-gray-500 text-sm">Live news from 15+ Nepali sources</p>
           </div>
           <div className="flex flex-wrap gap-2 items-center">
-            {/* Time Range */}
-            {[
-              { label: 'All', val: 0 },
-              { label: '1h', val: 1 },
-              { label: '6h', val: 6 },
-              { label: '24h', val: 24 },
-              { label: '3d', val: 72 },
-              { label: '7d', val: 168 },
-            ].map(({ label, val }) => (
-              <button
-                key={val}
-                onClick={() => setTimeRange(val)}
-                className={`px-2 py-1 rounded text-xs font-medium transition ${
-                  timeRange === val
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                }`}
-              >
+            {[{ label: 'All', val: 0 }, { label: '1h', val: 1 }, { label: '6h', val: 6 }, { label: '24h', val: 24 }, { label: '3d', val: 72 }, { label: '7d', val: 168 }].map(({ label, val }) => (
+              <button key={val} onClick={() => setTimeRange(val)} className={`px-2 py-1 rounded text-xs font-medium transition ${timeRange === val ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}>
                 {label}
               </button>
             ))}
-
-            {/* Tab Toggle */}
             {['all', 'disaster'].map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-2 py-1 rounded text-xs font-medium transition ${
-                  activeTab === tab
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                }`}
-              >
+              <button key={tab} onClick={() => setActiveTab(tab)} className={`px-2 py-1 rounded text-xs font-medium transition ${activeTab === tab ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}>
                 {tab === 'all' ? 'All' : 'Disaster'}
               </button>
             ))}
@@ -166,54 +146,67 @@ function Home() {
 
         {/* Search */}
         <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Search news..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <input type="text" placeholder="Search news..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
-        {/* News List */}
-        {(activeTab === 'all' ? news : disasterNews).length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-            Loading news...
-          </div>
+        {currentNews.length === 0 ? (
+          <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">Loading news...</div>
         ) : (
-          <div className="space-y-3">
-            {(activeTab === 'all' ? news : disasterNews).map((item, i) => (
-              <a
-                key={i}
-                href={item.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition border-l-4 border-blue-500"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-800 hover:text-blue-600 leading-snug">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-500 text-sm mt-1 line-clamp-2">
-                      {item.summary}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end shrink-0 text-xs text-gray-400 gap-1">
-                    <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-                      {item.source}
-                    </span>
-                    <span>{formatDate(item.pubDate)}</span>
-                    {item.disasterRelated && (
-                      <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
-                        Disaster
-                      </span>
-                    )}
+          <>
+            {/* Featured article with photo */}
+            {featured && (
+              <a href={featured.link} target="_blank" rel="noopener noreferrer" className="block mb-4 bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition">
+                <div className="flex flex-col md:flex-row">
+                  {featured.image ? (
+                    <div className="md:w-1/2 h-48 md:h-64 bg-gray-200 shrink-0">
+                      <img src={featured.image} alt={featured.title} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none' }} />
+                    </div>
+                  ) : (
+                    <div className="md:w-1/2 h-48 md:h-64 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shrink-0">
+                      <span className="text-white text-4xl font-bold">SafeNepal</span>
+                    </div>
+                  )}
+                  <div className="p-5 flex flex-col justify-center flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">{featured.source}</span>
+                      <span className="text-gray-400 text-xs">{formatDate(featured.pubDate)}</span>
+                      {featured.disasterRelated && <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-medium">Disaster</span>}
+                    </div>
+                    <h3 className="font-bold text-xl text-gray-800 hover:text-blue-600 leading-snug mb-2">{featured.title}</h3>
+                    <p className="text-gray-500 text-sm line-clamp-3">{featured.summary}</p>
                   </div>
                 </div>
               </a>
-            ))}
-          </div>
+            )}
+
+            {/* Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {gridItems.map((item, i) => (
+                <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="block bg-white rounded-lg shadow-sm hover:shadow-md transition overflow-hidden group">
+                  {/* Image */}
+                  {item.image ? (
+                    <div className="h-40 bg-gray-200 overflow-hidden">
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" onError={(e) => { e.target.parentElement.innerHTML = '<div class="h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center"><span class="text-white text-lg font-bold">News</span></div>' }} />
+                    </div>
+                  ) : (
+                    <div className="h-40 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                      <span className="text-white text-lg font-bold">News</span>
+                    </div>
+                  )}
+                  {/* Content */}
+                  <div className="p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">{item.source}</span>
+                      <span className="text-gray-400 text-xs">{formatDate(item.pubDate)}</span>
+                      {item.disasterRelated && <span className="bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full text-xs">Disaster</span>}
+                    </div>
+                    <h3 className="font-medium text-sm text-gray-800 hover:text-blue-600 leading-snug line-clamp-2 mb-1">{item.title}</h3>
+                    <p className="text-gray-500 text-xs line-clamp-2">{item.summary}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </>
         )}
       </section>
     </div>

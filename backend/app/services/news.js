@@ -74,16 +74,42 @@ function filterByTimeRange(articles, hours) {
   });
 }
 
+function extractImage(item) {
+  // Check enclosure
+  if (item.enclosure && item.enclosure.url && item.enclosure.type?.startsWith('image')) {
+    return item.enclosure.url;
+  }
+  // Check media:content
+  if (item['media:content'] && item['media:content']['@_url']) {
+    return item['media:content']['@_url'];
+  }
+  // Check media:thumbnail
+  if (item['media:thumbnail'] && item['media:thumbnail']['@_url']) {
+    return item['media:thumbnail']['@_url'];
+  }
+  // Extract from content HTML
+  const content = item.content || item['content:encoded'] || '';
+  const imgMatch = content.match(/<img[^>]+src="([^">]+)"/);
+  if (imgMatch) return imgMatch[1];
+  // Check description
+  const desc = item.description || '';
+  const descImg = desc.match(/<img[^>]+src="([^">]+)"/);
+  if (descImg) return descImg[1];
+  return null;
+}
+
 async function fetchFromSource(source) {
   try {
     const feed = await parser.parseURL(source.url);
     const items = (feed.items || []).map((item) => {
       const pubDate = item.pubDate || item.isoDate || item['dc:date'] || item.published || item.updated || '';
       const parsed = parseDate(pubDate);
+      const image = extractImage(item);
       return {
         title: item.title || '',
         link: item.link || '',
         summary: (item.contentSnippet || item.content || item.description || '').substring(0, 300),
+        image,
         pubDate: parsed ? parsed.toISOString() : new Date().toISOString(),
         timestamp: parsed ? parsed.getTime() : Date.now(),
         source: source.name,
