@@ -9,8 +9,6 @@ const parser = new Parser({
 });
 
 const NEWS_SOURCES = [
-  { name: 'The Kathmandu Post', url: 'https://kathmandupost.com/feed', type: 'english' },
-  { name: 'Republica', url: 'https://www.myrepublica.com/feed', type: 'english' },
   { name: 'Setopati', url: 'https://www.setopati.com/feed', type: 'nepali' },
   { name: 'Online Khabar', url: 'https://www.onlinekhabar.com/feed', type: 'nepali' },
   { name: 'Ratopati', url: 'https://ratopati.com/feed', type: 'nepali' },
@@ -22,6 +20,7 @@ const NEWS_SOURCES = [
   { name: 'Google News Landslide', url: 'https://news.google.com/rss/search?q=Nepal+landslide&hl=en&gl=NP&ceid=NP:en', type: 'english' },
   { name: 'Google News Monsoon', url: 'https://news.google.com/rss/search?q=Nepal+monsoon+rain&hl=en&gl=NP&ceid=NP:en', type: 'english' },
   { name: 'Google News Rescue', url: 'https://news.google.com/rss/search?q=Nepal+rescue+relief&hl=en&gl=NP&ceid=NP:en', type: 'english' },
+  { name: 'Google News Nepal Disaster Nepali', url: 'https://news.google.com/rss/search?q=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2+%E0%A4%AC%E0%A4%BE%E0%A4%9D%E0%A5%80+%E0%A4%95%E0%A5%8D%E0%A4%B7%E0%A4%A4%E0%A4%BF&hl=ne&gl=NP&ceid=NP:ne', type: 'nepali' },
 ];
 
 const DISASTER_KEYWORDS = [
