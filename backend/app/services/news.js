@@ -9,18 +9,22 @@ const parser = new Parser({
 });
 
 const NEWS_SOURCES = [
+  { name: 'Google News Nepal', url: 'https://news.google.com/rss/search?q=Nepal+earthquake&hl=en&gl=NP&ceid=NP:en', type: 'english' },
+  { name: 'Google News Nepal Flood', url: 'https://news.google.com/rss/search?q=Nepal+flood&hl=en&gl=NP&ceid=NP:en', type: 'english' },
+  { name: 'Google News Nepal Landslide', url: 'https://news.google.com/rss/search?q=Nepal+landslide&hl=en&gl=NP&ceid=NP:en', type: 'english' },
+  { name: 'Google News Nepal Monsoon', url: 'https://news.google.com/rss/search?q=Nepal+monsoon+rain+disaster&hl=en&gl=NP&ceid=NP:en', type: 'english' },
+  { name: 'Google News Nepal Rescue', url: 'https://news.google.com/rss/search?q=Nepal+rescue+relief+victim&hl=en&gl=NP&ceid=NP:en', type: 'english' },
+  { name: 'Google News Nepal Nepali', url: 'https://news.google.com/rss/search?q=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2+%E0%A4%AC%E0%A4%BE%E0%A4%9D%E0%A5%80&hl=ne&gl=NP&ceid=NP:ne', type: 'nepali' },
+  { name: 'Google News Nepal Nepali Disaster', url: 'https://news.google.com/rss/search?q=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2+%E0%A4%AC%E0%A4%BE%E0%A4%9D%E0%A5%80+%E0%A4%95%E0%A5%8D%E0%A4%B7%E0%A4%A4%E0%A4%BF&hl=ne&gl=NP&ceid=NP:ne', type: 'nepali' },
+  { name: 'Google News Nepal Earthquake Nepali', url: 'https://news.google.com/rss/search?q=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2+%E0%A4%AD%E0%A5%82%E0%A4%95%E0%A4%AE%E0%A5%8D%E0%A4%AA&hl=ne&gl=NP&ceid=NP:ne', type: 'nepali' },
+  { name: 'Google News Nepal Flood Nepali', url: 'https://news.google.com/rss/search?q=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2+%E0%A4%AC%E0%A4%BE%E0%A4%9D%E0%A5%80&hl=ne&gl=NP&ceid=NP:ne', type: 'nepali' },
+  { name: 'Google News Nepal Landslide Nepali', url: 'https://news.google.com/rss/search?q=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2+%E0%A4%AA%E0%A4%B9%E0%A4%BF%E0%A4%B0%E0%A5%8B&hl=ne&gl=NP&ceid=NP:ne', type: 'nepali' },
+  { name: 'Google News Nepal GLOF', url: 'https://news.google.com/rss/search?q=Nepal+GLOF+glacial&hl=en&gl=NP&ceid=NP:en', type: 'english' },
+  { name: 'Google News Nepal Fire', url: 'https://news.google.com/rss/search?q=Nepal+fire+disaster&hl=en&gl=NP&ceid=NP:en', type: 'english' },
+  { name: 'Google News Nepal Storm', url: 'https://news.google.com/rss/search?q=Nepal+storm+wind+heavy+rain&hl=en&gl=NP&ceid=NP:en', type: 'english' },
   { name: 'Setopati', url: 'https://www.setopati.com/feed', type: 'nepali' },
   { name: 'Online Khabar', url: 'https://www.onlinekhabar.com/feed', type: 'nepali' },
-  { name: 'Ratopati', url: 'https://ratopati.com/feed', type: 'nepali' },
   { name: 'Nepal Khabar', url: 'https://nepalkhabar.com/feed', type: 'nepali' },
-  { name: 'Google News Nepal', url: 'https://news.google.com/rss/search?q=Nepal+disaster&hl=en&gl=NP&ceid=NP:en', type: 'english' },
-  { name: 'Google News Nepal Nepali', url: 'https://news.google.com/rss/search?q=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2+%E0%A4%AC%E0%A4%BE%E0%A4%9D%E0%A5%80&hl=ne&gl=NP&ceid=NP:ne', type: 'nepali' },
-  { name: 'Google News Earthquake', url: 'https://news.google.com/rss/search?q=Nepal+earthquake&hl=en&gl=NP&ceid=NP:en', type: 'english' },
-  { name: 'Google News Flood', url: 'https://news.google.com/rss/search?q=Nepal+flood&hl=en&gl=NP&ceid=NP:en', type: 'english' },
-  { name: 'Google News Landslide', url: 'https://news.google.com/rss/search?q=Nepal+landslide&hl=en&gl=NP&ceid=NP:en', type: 'english' },
-  { name: 'Google News Monsoon', url: 'https://news.google.com/rss/search?q=Nepal+monsoon+rain&hl=en&gl=NP&ceid=NP:en', type: 'english' },
-  { name: 'Google News Rescue', url: 'https://news.google.com/rss/search?q=Nepal+rescue+relief&hl=en&gl=NP&ceid=NP:en', type: 'english' },
-  { name: 'Google News Nepal Disaster Nepali', url: 'https://news.google.com/rss/search?q=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2+%E0%A4%AC%E0%A4%BE%E0%A4%9D%E0%A5%80+%E0%A4%95%E0%A5%8D%E0%A4%B7%E0%A4%A4%E0%A4%BF&hl=ne&gl=NP&ceid=NP:ne', type: 'nepali' },
 ];
 
 const DISASTER_KEYWORDS = [

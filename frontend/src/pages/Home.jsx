@@ -5,9 +5,7 @@ const API = 'http://localhost:8000'
 function Home() {
   const [disasters, setDisasters] = useState([])
   const [news, setNews] = useState([])
-  const [disasterNews, setDisasterNews] = useState([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('all')
   const [timeRange, setTimeRange] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -18,28 +16,19 @@ function Home() {
     return fetch(url).then((r) => (r.ok ? r.json() : { data: [] })).catch(() => ({ data: [] }))
   }
 
-  const fetchDisasterNews = (hours = 0) => {
-    let url = `${API}/api/v1/news/disaster?limit=50`
-    if (hours > 0) url += `&hours=${hours}`
-    return fetch(url).then((r) => (r.ok ? r.json() : { data: [] })).catch(() => ({ data: [] }))
-  }
-
   useEffect(() => {
     Promise.all([
       fetch(`${API}/api/v1/disasters/active`).then((r) => (r.ok ? r.json() : [])).catch(() => []),
       fetchNews(),
-      fetchDisasterNews(),
-    ]).then(([d, n, dn]) => {
+    ]).then(([d, n]) => {
       setDisasters(Array.isArray(d) ? d : [])
       setNews(n.data || [])
-      setDisasterNews(dn.data || [])
       setLoading(false)
     })
   }, [])
 
   useEffect(() => {
     fetchNews(timeRange, searchQuery).then((n) => setNews(n.data || []))
-    fetchDisasterNews(timeRange).then((dn) => setDisasterNews(dn.data || []))
   }, [timeRange, searchQuery])
 
   const getRiskColor = (level) => {
@@ -70,16 +59,13 @@ function Home() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-lg text-gray-500">Loading data...</div>
+        <div className="text-lg text-gray-500">Loading disaster news...</div>
       </div>
     )
   }
 
-  const currentNews = activeTab === 'all' ? news : disasterNews
-
-  // Split: first 1 big, rest grid
-  const featured = currentNews[0]
-  const gridItems = currentNews.slice(1)
+  const featured = news[0]
+  const gridItems = news.slice(1)
 
   return (
     <div>
@@ -122,13 +108,12 @@ function Home() {
         )}
       </section>
 
-      {/* News Section */}
+      {/* Disaster News */}
       <section>
-        {/* Header + Controls */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h2 className="text-xl font-semibold text-gray-800">News Feed</h2>
-            <p className="text-gray-500 text-sm">Live news from 15+ Nepali sources</p>
+            <h2 className="text-xl font-semibold text-gray-800">Disaster News</h2>
+            <p className="text-gray-500 text-sm">Earthquake, flood, landslide & more from Nepal</p>
           </div>
           <div className="flex flex-wrap gap-2 items-center">
             {[{ label: 'All', val: 0 }, { label: '1h', val: 1 }, { label: '6h', val: 6 }, { label: '24h', val: 24 }, { label: '3d', val: 72 }, { label: '7d', val: 168 }].map(({ label, val }) => (
@@ -136,24 +121,17 @@ function Home() {
                 {label}
               </button>
             ))}
-            {['all', 'disaster'].map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)} className={`px-2 py-1 rounded text-xs font-medium transition ${activeTab === tab ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}>
-                {tab === 'all' ? 'All' : 'Disaster'}
-              </button>
-            ))}
           </div>
         </div>
 
-        {/* Search */}
         <div className="mb-4">
-          <input type="text" placeholder="Search news..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input type="text" placeholder="Search disaster news..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
 
-        {currentNews.length === 0 ? (
+        {news.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">Loading news...</div>
         ) : (
           <>
-            {/* Featured article with photo */}
             {featured && (
               <a href={featured.link} target="_blank" rel="noopener noreferrer" className="block mb-4 bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition">
                 <div className="flex flex-col md:flex-row">
@@ -166,7 +144,6 @@ function Home() {
                     <div className="flex items-center gap-2 mb-2">
                       <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">{featured.source}</span>
                       <span className="text-gray-400 text-xs">{formatDate(featured.pubDate)}</span>
-                      {featured.disasterRelated && <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-medium">Disaster</span>}
                     </div>
                     <h3 className="font-bold text-xl text-gray-800 hover:text-blue-600 leading-snug mb-2">{featured.title}</h3>
                     <p className="text-gray-500 text-sm line-clamp-3">{featured.summary}</p>
@@ -175,7 +152,6 @@ function Home() {
               </a>
             )}
 
-            {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {gridItems.map((item, i) => (
                 <a key={i} href={item.link} target="_blank" rel="noopener noreferrer" className="block bg-white rounded-lg shadow-sm hover:shadow-md transition overflow-hidden group">
@@ -188,7 +164,6 @@ function Home() {
                     <div className="flex items-center gap-2 mb-2">
                       <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">{item.source}</span>
                       <span className="text-gray-400 text-xs">{formatDate(item.pubDate)}</span>
-                      {item.disasterRelated && <span className="bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full text-xs">Disaster</span>}
                     </div>
                     <h3 className="font-medium text-sm text-gray-800 hover:text-blue-600 leading-snug line-clamp-2 mb-1">{item.title}</h3>
                     <p className="text-gray-500 text-xs line-clamp-2">{item.summary}</p>

@@ -45,12 +45,10 @@ router.get('/', (req, res) => {
   const limit = parseInt(req.query.limit) || 30;
   const hours = parseInt(req.query.hours) || 0;
   const source = req.query.source || '';
-  const disasterOnly = req.query.disaster === 'true';
   const search = (req.query.q || '').toLowerCase();
 
-  let results = [...newsCache];
+  let results = newsCache.filter((n) => n.disasterRelated);
   if (hours > 0) results = filterByTimeRange(results, hours);
-  if (disasterOnly) results = results.filter((n) => n.disasterRelated);
   if (source) results = results.filter((n) => n.source.toLowerCase().includes(source.toLowerCase()));
   if (search) results = results.filter((n) => n.title.toLowerCase().includes(search) || n.summary.toLowerCase().includes(search));
 
